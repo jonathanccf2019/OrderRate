@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>取單率計算器</title>
+    <style>
+        body {
+            background-color: rgb(95, 93, 93);
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+            -webkit-user-select: none; /* 禁止 Chrome, Safari, Opera 選取 */
+            -moz-user-select: none;    /* 禁止 Firefox 選取 */
+            -ms-user-select: none;     /* 禁止 IE, Edge 選取 */
+            user-select: none;         /* 禁止選取文字 */
+        }
+        .row {
+            margin: 20px 0;
+        }
+        input {
+            padding: 10px;
+            font-size: 16px;
+            text-align: center;
+            width: 80%;
+        }
+        .result {
+            background-color: #556B2F; /* 軍綠色 */
+            padding: 10px;
+            font-size: 20px;
+            margin-top: 10px;
+        }
+        #extraRows {
+            display: none;
+        }
+        img {
+            -webkit-user-drag: none; /* 禁止拖曳圖片 */
+            pointer-events: none;    /* 禁止點擊圖片 */
+        }
+    </style>
+</head>
+<body>
+    <div class="row"><span style="color: rgb(68, 67, 67);">區間</span>取單率</div>
+    <div class="row">
+        <input type="number" id="rate" placeholder="輸入取單率(如 88)" oninput="calculateOrders()">
+    </div>
+
+    <div class="row"><span style="color: rgb(68, 67, 67);">過往紀錄</span>完成訂單件數</div>
+    <div class="row">
+        <input type="number" id="actualOrders" placeholder="輸入完成訂單數" oninput="calculateOrders()">
+    </div>
+
+    <div class="row">生成訂單數<span style="color: rgb(68, 67, 67);">(推算)</span></div>
+    <div class="row result" id="systemOrders">0</div>
+
+    <div id="extraRows">
+        <div class="row" id="extraText"></div>
+        <div class="row result" id="extraValue">0</div>
+    </div>
+
+    <script>
+        function calculateOrders() {
+            const rate = parseFloat(document.getElementById('rate').value);
+            const actualOrders = parseFloat(document.getElementById('actualOrders').value);
+
+            if (rate > 0 && actualOrders > 0) {
+                // 計算生成訂單數
+                const systemOrders = Math.round(actualOrders / (rate / 100));
+                document.getElementById('systemOrders').textContent = systemOrders;
+
+                const extraRows = document.getElementById('extraRows');
+                const extraText = document.getElementById('extraText');
+                const extraValue = document.getElementById('extraValue');
+
+                if (rate < 85) {
+                    extraText.textContent = "必須再補完成單";
+                    const requiredOrders = Math.ceil((0.85 * systemOrders - actualOrders) / (1 - 0.85));
+                    extraValue.textContent = requiredOrders > 0 ? requiredOrders : 0;
+                    extraRows.style.display = "block";
+                } else if (rate >= 85) {
+                    extraText.textContent = "可再取消訂單";
+                    const minActualOrders = Math.floor(systemOrders * 0.85);
+                    const cancelableOrders = Math.floor(actualOrders - minActualOrders);
+                    extraValue.textContent = cancelableOrders >= 0 ? cancelableOrders : 0;
+                    extraRows.style.display = "block";
+                }
+            } else {
+                document.getElementById('extraRows').style.display = "none";
+            }
+        }
+
+        // 禁止右鍵選單
+        document.addEventListener('contextmenu', function(event) {
+            event.preventDefault();
+        });
+
+        // 禁止快捷鍵 Ctrl+C、Ctrl+U、Ctrl+Shift+I
+        document.addEventListener('keydown', function(event) {
+            // 禁止 Ctrl+U 檢視原始碼
+            if (event.ctrlKey && event.key === 'u') {
+                event.preventDefault();
+            }
+            // 禁止 Ctrl+C 複製
+            if (event.ctrlKey && event.key === 'c') {
+                event.preventDefault();
+            }
+            // 禁止 Ctrl+Shift+I 開發者工具
+            if (event.ctrlKey && event.shiftKey && event.key === 'I') {
+                event.preventDefault();
+            }
+        });
+    </script>
+   <footer>
+    <div>
+        <p><strong>注意事項:</strong></p>
+            <li>熊貓系統的取單率不是及時更新的，大約每小時更新一次。</li>
+            <li>本計算機僅供參考，如果實際結果有誤，本工作室概不負責。</li>
+        <p>© 2024 喬納森餐飲工作室. 版權所有。</p>
+    </div>
+</footer>
+
+</body>
+</html>
