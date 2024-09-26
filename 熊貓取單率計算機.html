@@ -41,14 +41,15 @@
     </style>
 </head>
 <body>
-    <div class="row"><span style="color: rgb(68, 67, 67);">區間</span>取單率</div>
-    <div class="row">
-        <input type="number" id="rate" placeholder="輸入取單率(如 88)" oninput="calculateOrders()">
-    </div>
-
     <div class="row"><span style="color: rgb(68, 67, 67);">過往紀錄</span>完成訂單件數</div>
     <div class="row">
         <input type="number" id="actualOrders" placeholder="輸入完成訂單數" oninput="calculateOrders()">
+    </div>
+
+
+    <div class="row"><span style="color: rgb(68, 67, 67);">區間</span>取單率</div>
+    <div class="row">
+        <input type="number" id="rate" placeholder="輸入取單率(如 88)" oninput="calculateOrders()">
     </div>
 
     <div class="row">生成訂單數<span style="color: rgb(68, 67, 67);">(推算)</span></div>
@@ -114,7 +115,7 @@
    <footer>
     <div>
         <p><strong>注意事項:</strong></p>
-            <li>熊貓系統的取單率不是及時更新的，大約每小時更新一次。</li>
+            <li>熊貓系統的取單率不是及時更新的，大約每小時更新一次，建議上線前先計算今日可取消多少訂單。</li>
             <li>本計算機僅供參考，如果實際結果有誤，本工作室概不負責。</li>
         <p>© 2024 喬納森餐飲工作室. 版權所有。</p>
     </div>
