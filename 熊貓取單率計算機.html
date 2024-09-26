@@ -41,6 +41,10 @@
         .red {
             background-color: red; /* 紅色背景 */
         }
+        .error {
+            color: red;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
@@ -67,32 +71,38 @@
         function calculateOrders() {
             const rate = parseFloat(document.getElementById('rate').value);
             const actualOrders = parseFloat(document.getElementById('actualOrders').value);
+            const systemOrders = document.getElementById('systemOrders');
+            const extraRows = document.getElementById('extraRows');
+            const extraText = document.getElementById('extraText');
+            const extraValue = document.getElementById('extraValue');
+
+            // 取單率不得小於10，且不得大於100
+            if (rate < 10 || rate > 100) {
+                if (rate > 100) {
+                    systemOrders.textContent = "取單率不得大於100";
+                } else if (rate < 10) {
+                    systemOrders.textContent = "0"; // 取單率為個位數時顯示
+                }
+                extraRows.style.display = "none";
+                return;
+            }
 
             if (rate > 0 && actualOrders > 0) {
                 // 計算生成訂單數
-                const systemOrders = Math.round(actualOrders / (rate / 100));
-                document.getElementById('systemOrders').textContent = systemOrders;
-
-                const extraRows = document.getElementById('extraRows');
-                const extraText = document.getElementById('extraText');
-                const extraValue = document.getElementById('extraValue');
+                const calcSystemOrders = Math.round(actualOrders / (rate / 100));
+                systemOrders.textContent = calcSystemOrders;
 
                 if (rate < 85) {
                     extraText.textContent = "必須再補完成單";
                     // 計算必須再補單數
-                    const requiredOrders = Math.ceil((0.85 * systemOrders - actualOrders) / (1 - 0.85));
-                    if (requiredOrders > 0) {
-                        extraValue.textContent = `注意！必須再補 ${requiredOrders} 張訂單取單率才會達85%`;
-                        extraValue.classList.add('red');  // 加入紅色背景
-                    } else {
-                        extraValue.textContent = `注意！必須再補 0 張訂單取單率才會達85%`;
-                        extraValue.classList.add('red');  // 加入紅色背景
-                    }
+                    const requiredOrders = Math.ceil((0.85 * calcSystemOrders - actualOrders) / (1 - 0.85));
+                    extraValue.textContent = `注意!你必須再補${requiredOrders}張訂單`;
+                    extraValue.classList.add('red');  // 加入紅色背景
                     extraRows.style.display = "block";
                 } else if (rate >= 85) {
                     extraText.textContent = "可再取消訂單";
                     // 計算可取消訂單數
-                    const minActualOrders = Math.floor(systemOrders * 0.85);
+                    const minActualOrders = Math.floor(calcSystemOrders * 0.85);
                     const cancelableOrders = Math.floor(actualOrders - minActualOrders);
                     extraValue.textContent = cancelableOrders >= 0 ? cancelableOrders : 0;
                     extraValue.classList.remove('red');  // 移除紅色背景
