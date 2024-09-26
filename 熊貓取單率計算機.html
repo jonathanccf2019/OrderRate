@@ -38,14 +38,17 @@
             -webkit-user-drag: none; /* 禁止拖曳圖片 */
             pointer-events: none;    /* 禁止點擊圖片 */
         }
+        .red {
+            background-color: red; /* 紅色背景 */
+        }
     </style>
 </head>
 <body>
+
     <div class="row"><span style="color: rgb(68, 67, 67);">過往紀錄</span>完成訂單件數</div>
     <div class="row">
         <input type="number" id="actualOrders" placeholder="輸入完成訂單數" oninput="calculateOrders()">
     </div>
-
 
     <div class="row"><span style="color: rgb(68, 67, 67);">區間</span>取單率</div>
     <div class="row">
@@ -76,14 +79,23 @@
 
                 if (rate < 85) {
                     extraText.textContent = "必須再補完成單";
+                    // 計算必須再補單數
                     const requiredOrders = Math.ceil((0.85 * systemOrders - actualOrders) / (1 - 0.85));
-                    extraValue.textContent = requiredOrders > 0 ? requiredOrders : 0;
+                    if (requiredOrders > 0) {
+                        extraValue.textContent = `注意！必須再補 ${requiredOrders} 張訂單取單率才會達85%`;
+                        extraValue.classList.add('red');  // 加入紅色背景
+                    } else {
+                        extraValue.textContent = `注意！必須再補 0 張訂單取單率才會達85%`;
+                        extraValue.classList.add('red');  // 加入紅色背景
+                    }
                     extraRows.style.display = "block";
                 } else if (rate >= 85) {
                     extraText.textContent = "可再取消訂單";
+                    // 計算可取消訂單數
                     const minActualOrders = Math.floor(systemOrders * 0.85);
                     const cancelableOrders = Math.floor(actualOrders - minActualOrders);
                     extraValue.textContent = cancelableOrders >= 0 ? cancelableOrders : 0;
+                    extraValue.classList.remove('red');  // 移除紅色背景
                     extraRows.style.display = "block";
                 }
             } else {
